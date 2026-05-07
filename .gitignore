@@ -1,1 +1,8 @@
 /notebooks
+PSI Data_Engineering_Intern_take_home_assignment- May 2026.pdf
+.venv
+data/customers.csv
+data/order_items.csv
+data/orders.csv
+data/returns.csv
+

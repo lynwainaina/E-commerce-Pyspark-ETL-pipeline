@@ -146,36 +146,3 @@ def ingest_all(spark: SparkSession, data_dir: Path = DATA_DIR) -> Dict[str, Dict
         out[name] = {"clean": clean, "rejected": rejected}
     return out
 
-# 
-def summarize_ingest(ingested: Dict[str, Dict[str, DataFrame]]) -> Dict[str, Dict[str, int]]:
-    summary: Dict[str, Dict[str, int]] = {}
-    for name, dfs in ingested.items():
-        summary[name] = {
-            "clean": dfs["clean"].count(),
-            "rejected": dfs["rejected"].count(),
-        }
-    return summary
-
-
-def log_ingest_summary(summary: Dict[str, Dict[str, int]]) -> None:
-    "Print row counts per table"
-    
-    header = f"{'table':<14}{'clean':>12}{'rejected':>12}"
-    print(header)
-    print("-" * len(header))
-    for name, counts in summary.items():
-        print(f"{name:<14}{counts['clean']:>12}{counts['rejected']:>12}")
-        
-
-if __name__ == "__main__":
-    spark = create_spark_session()
-    try:
-        ingested = ingest_all(spark)
-        summary = summarize_ingest(ingested)
-        log_ingest_summary(summary)
-        for name, dfs in ingested.items():
-            if summary[name]["rejected"] > 0:
-                print(f"\n--- rejected sample: {name} ---")
-                dfs["rejected"].show(5, truncate=False)
-    finally:
-        spark.stop()
